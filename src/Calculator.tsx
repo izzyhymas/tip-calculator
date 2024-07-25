@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import styles from "./Calculator.module.css";
+
 const Calculator: React.FC = () => {
   // State for storing bill
   const [bill, setBill] = useState<number | string>("");
@@ -9,14 +11,17 @@ const Calculator: React.FC = () => {
   const [total, setTotal] = useState<number | null>(null);
 
   // Checks if string is a valid number
-  const isNumber = (num: string): boolean => /^\d+$/.test(num);
+  const isNumber = (num: string): boolean => /^\d*\.?\d*$/.test(num);
 
   // Prevents page from refreshing when the submit button is clicked
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (typeof bill === "number" && typeof tipPercentage === "number") {
-      setTotal(Number(bill * tipPercentage));
+      const tipAmount = bill * (tipPercentage / 100);
+      const totalAmount = bill + tipAmount;
+      const roundedTotal = Math.round(totalAmount * 100) / 100; 
+      setTotal(roundedTotal);
     } else {
       alert("Please enter valid numbers");
     }
@@ -27,12 +32,14 @@ const Calculator: React.FC = () => {
   ): void => {
     const newBill = event.target.value;
 
+    // If input is cleared, set tip to empty string
     if (newBill === "") {
       setBill("");
     } else if (isNumber(newBill)) {
+      // If input is valid, update the bill state
       setBill(Number(newBill));
     }
-  }
+  };
 
   const handleTipChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -43,14 +50,15 @@ const Calculator: React.FC = () => {
     if (newTip === "") {
       setTipPercentage("");
     } else if (isNumber(newTip)) {
+      // If input is valid, update the tip state
       setTipPercentage(Number(newTip));
     }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className={styles.calculator}>
+      <form onSubmit={handleSubmit} className={styles.calculatorForm}>
+        <div className={styles.formGroup}>
           <label htmlFor="bill">Bill Amount</label>
           <input
             type="text"
@@ -60,10 +68,10 @@ const Calculator: React.FC = () => {
             onChange={handleBillChange}
           ></input>
         </div>
-        <div>
+        <div className={styles.formGroup}>
           <label htmlFor="tipPercentage">Tip Percentage</label>
           <input
-            type="number"
+            type="text"
             id="tipPercentage"
             value={tipPercentage}
             placeholder="Enter Tip Percentage"
@@ -73,8 +81,8 @@ const Calculator: React.FC = () => {
         <button type="submit">Submit</button>
       </form>
       {/* Displays the result if total is not null */}
-      {total && <h2>Your bill amount is {total}</h2>}
-    </>
+      {total && <h2>Your total bill is {total}</h2>}
+    </div>
   );
 };
 
