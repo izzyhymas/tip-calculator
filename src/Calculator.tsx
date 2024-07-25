@@ -4,22 +4,22 @@ import styles from "./Calculator.module.css";
 
 const Calculator: React.FC = () => {
   // State for storing bill
-  const [bill, setBill] = useState<number | string>("");
+  const [bill, setBill] = useState<string>("");
   // State for storing tip percentage
   const [tipPercentage, setTipPercentage] = useState<number | string>("");
   // State for storing total bill after tip
   const [total, setTotal] = useState<number | null>(null);
 
   // Checks if string is a valid number
-  const isNumber = (num: string): boolean => /^\d*\.?\d*$/.test(num);
+  const isNumber = (num: string): boolean => /^\d*\.?\d{0,2}$/.test(num);
 
   // Prevents page from refreshing when the submit button is clicked
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (typeof bill === "number" && typeof tipPercentage === "number") {
-      const tipAmount = bill * (tipPercentage / 100);
-      const totalAmount = bill + tipAmount;
+    if (bill && typeof tipPercentage === "number") {
+      const tipAmount = Number(bill) * (tipPercentage / 100);
+      const totalAmount = Number(bill) + tipAmount;
       const roundedTotal = Math.round(totalAmount * 100) / 100; 
       setTotal(roundedTotal);
     } else {
@@ -31,13 +31,12 @@ const Calculator: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const newBill = event.target.value;
-
     // If input is cleared, set tip to empty string
     if (newBill === "") {
       setBill("");
     } else if (isNumber(newBill)) {
       // If input is valid, update the bill state
-      setBill(Number(newBill));
+      setBill(newBill);
     }
   };
 

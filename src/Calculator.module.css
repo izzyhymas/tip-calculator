@@ -41,4 +41,5 @@ button {
     font-size: larger;
     padding: 1rem;
     border-radius: 12px;
+    cursor: pointer;
 }
